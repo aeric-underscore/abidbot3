@@ -1,0 +1,1 @@
+in setup, you can create different seed folders with different settings, then choosing which one to pull from when you run setmovie
