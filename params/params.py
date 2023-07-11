@@ -27,7 +27,7 @@ it =
 dt = 
 
 # M: 		    [float] in (0, inf)
-#               The ADM mass (this is used to normalize time/length labels)
+#               The ADM mass at initial time(this is used to normalize time/length labels)
 #				| found in the file "bhns.mon", there are one or multple columns (black holes and volume are separate)
 #				| starting with M_ADM; the set M equal to the sum of these (just take the value of the first time)
 M = 
@@ -44,28 +44,19 @@ maxdensity =
 #				| and divide by the iteration step "it" 
 offset = 0
     
+# time_offset:  [float] This parameter is rarely nonzero. time_offset is described by the following 
+#			    relation
+#				    t/M = ( (iteration number)*(dt)/(it) + (time_offset) )/M
+#			    time_offset may be nonzero if there is regridding involved.
+#			    If there has been regridding and the new run starts at iteration 0 this will 
+#			    probably be nonzero
+time_offset = 0.0
+
 # numStars:		[int] in {1,2}
 #               The number of stellar objects in our initial system (needed to determine where to center the camera when filming)
 #				| e.g. neutron star is 1, binaries are 2
 numStars=1
 
-
-########## VisIt attribute XML files ##########
-# maybe move these to the run scripts since they aren't required for setup
-atts = root + "/bin/visit_atts"
-
-# rho_volXML:       volume attributes xml file used when plotting the density rho
-#                   | used when plotting rho as volume
-rho_volXML = atts + "/volume_file.xml"       
-
-# rho_pseudoXML:    attributes xml files used when plotting the density rho using a
-# rho_isoXML:       pseudocolor plot with the isosurface operator (faster than volume)
-#                   | used when plotting rho as iso
-rho_pseudoXML = atts + "/pseudo_file.xml"
-rho_isoXML = atts + "/iso_file.xml"
-
-# vec1XML:          vector attributes xml files used when plotting velocity with vector fields
-# vec2XML:          
 
 
 
@@ -88,5 +79,5 @@ bh_flags = [bh1, bh2, bh3]
 
 
 
-params = [root, it, dt, M, maxdensity, offset, numStars, bhForms, bh_flags]
+params = [root, it, dt, M, maxdensity, offset, time_offset, numStars, bhForms, bh_flags]
 

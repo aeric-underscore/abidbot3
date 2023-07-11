@@ -133,14 +133,17 @@ def write_vtk_2D_grid(a):
     grid_f.write(" ".join([str(i) for i in np.zeros(new_num*new_num)]))
     grid_f.close()
 
-def write_vtk_2D(ylm, r, t, dt, clm, xs, ys, sx, sy, fol, all_modes, mode): 
+def write_vtk_2D(ylm, r, t, dt, clm, xs, ys, sx, sy, fol, all_modes, modes): 
     rt = ((t - (r/dt)).astype(int)).clip(min=0)  #see write_vtk_3D for details
     clm_ij = clm[rt,:]
     r_ji = np.einsum('ij->ji', r)
     if all_modes == True:
         hphc = np.einsum('ijm->ji', ylm*clm_ij)/r_ji
     else:  #plot chosen mode
-        hphc = np.einsum('ij->ji', (ylm*clm_ij)[...,mode])/r_ji
+        hphc = (ylm*clm_ij)[...,modes[0]]
+        for m in range(1, len(modes)):
+            hphc += (ylm*clm_ij)[...,modes[m]]
+        hphc = np.einsum('ij->ji', hphc)/r_ji
 
     scale_factor = 2000  #to scale the plane so it doesn't look flat
     hp = scale_factor * 2*np.real(hphc).flatten()
@@ -148,7 +151,7 @@ def write_vtk_2D(ylm, r, t, dt, clm, xs, ys, sx, sy, fol, all_modes, mode):
     hphc_to_vtk_2D(t, hp, hc, xs, ys, sx, sy, fol)
     return np.real(hphc[0,0])
 
-def write_vtk_3D(ylm, r, t, dt, clm, xs, ys, zs, sx, sy, sz, fol, all_modes, mode):
+def write_vtk_3D(ylm, r, t, dt, clm, xs, ys, zs, sx, sy, sz, fol, all_modes, modes):
     # gives a 'retarded time index' for the clm array
     #     needs to be int to reindex clm[t,mode] -> clm[rt[i,j,k], mode]
     #     clip sets all negative values to 0 so doesn't go out of index
@@ -161,7 +164,10 @@ def write_vtk_3D(ylm, r, t, dt, clm, xs, ys, zs, sx, sy, sz, fol, all_modes, mod
     if all_modes == True:
         hphc = np.einsum('ijkm->kji',ylm*clm_ijk)/r_kji
     else:  #plot chosen mode
-        hphc = np.einsum('ijk->kji',(ylm*clm_ijk)[...,mode])/r_kji
+        hphc = (ylm*clm_ijk)[...,mode]
+        for m in range(1, len(modes)):
+            hphc += (ylm*clm_ijk)[...,mode]
+        hphc = np.einsum('ijk->kji',hphc)/r_kji
 
     hp = 2*np.real(hphc).flatten()
     hc = -2*np.imag(hphc).flatten()
@@ -183,10 +189,10 @@ def gen_data(a):
         time_f.write(str(t*a.gw.gw_dt))   #unretarded time
         print("gen_data at time=" + str(t))
         if a.gw.threeD:
-            h_max = write_vtk_3D(a.gw.ylm_3D, a.gw.r_3D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_3D, a.gw.ys_3D, a.gw.zs_3D, a.gw.sx_3D, a.gw.sy_3D, a.gw.sz_3D, a.gw.fol_name, a.gw.plot_all_modes, a.gw.mode_to_plot)
+            h_max = write_vtk_3D(a.gw.ylm_3D, a.gw.r_3D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_3D, a.gw.ys_3D, a.gw.zs_3D, a.gw.sx_3D, a.gw.sy_3D, a.gw.sz_3D, a.gw.fol_name, a.gw.plot_all_modes, a.gw.modes_to_plot)
             max_strain = max(max_strain, h_max)
         if a.gw.twoD:
-            hp = write_vtk_2D(a.gw.ylm_2D, a.gw.r_2D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_2D, a.gw.ys_2D, a.gw.sx_2D, a.gw.sy_2D, a.gw.fol_name, a.gw.plot_all_modes, a.gw.mode_to_plot)
+            hp = write_vtk_2D(a.gw.ylm_2D, a.gw.r_2D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_2D, a.gw.ys_2D, a.gw.sx_2D, a.gw.sy_2D, a.gw.fol_name, a.gw.plot_all_modes, a.gw.modes_to_plot)
             hp_f.write(str(hp) + '\n')
 
     hp_f.close()

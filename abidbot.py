@@ -33,8 +33,21 @@ class AbidBot:
                    \n{self.gw}\n"""
     
     class ParamsBot:
-        def __init__(self, params):
-            self.params = params
+        def __init__(self, params):  #params = [root, it, dt, M, maxdensity, offset, time_offset, numStars, bhForms, bh_flags]
+            self.p.root = str(params[0])
+            self.p.it = int(params[1])
+            self.p.dt = float(params[2])
+            self.p.M = float(params[3])
+            self.p.maxdensity = float(params[4])
+            self.p.offset = int(params[5])
+            self.p.time_offset = float(params[6])
+            self.p.numStars = int(params[7])
+
+            self.p.bhForms = bool(params[8])
+            bh_flags = params[9]
+            self.p.bh1 = bool(bh_flags[0])
+            self.p.bh2 = bool(bh_flags[1])
+            self.p.bh3 = bool(bh_flags[2])
 
         def __str__(self):
             return f'helo i am params bot'
@@ -77,7 +90,7 @@ class AbidBot:
             sim_params = params_gw[6]
             self.M_ADM = float(sim_params[0]); self.cutoff_w = float(sim_params[1]); self.r_areal = float(sim_params[2]); self.gw_dt = float(sim_params[3])
             self.num_modes = int(sim_params[4]); self.num_times = int(sim_params[5])
-            self.plot_all_modes = bool(sim_params[6]); self.mode_to_plot = int(sim_params[7])
+            self.plot_all_modes = bool(sim_params[6]); self.modes_to_plot = sim_params[7]
 
             
             self.all_times = bool(params_gw[7])

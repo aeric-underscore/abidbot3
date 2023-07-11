@@ -14,8 +14,8 @@ update_lookup = True   #boolean 0 or 1   only need to update if you change resol
 psi4_dir = "/anvil/scratch/x-ericyu3/gw_plane_development/Psi4_dir_bbh"   #folder containing Psi4_rad.mon.#
 psi4_num = 3  # the last number # in Psi4_ad.mon.#, corresponds to extraction radius
 plot_all_modes = True #plots the sum of all the modes if true
-mode_to_plot = 2   #if above is false, then plots only this mode; must be a number 0,1,...,num_modes-1
-                   # mode 0 is (2,2), 1 is (2,1), ..., 4 is (2,-2), 5 is (3,3), etc..
+modes_to_plot = [0,4]   #if above is false, then plots only this mode; must be a number 0,1,...,num_modes-1
+                       # mode 0 is (2,2), 1 is (2,1), 2 is (2,0), 3 is (2,-1), 4 is (2,-2), 5 is (3,3), etc..
 
 
 M_ADM = 1.0
@@ -98,7 +98,7 @@ gw_dt = float(out_arr[3])
 
 grid_params = [xy_max_3D, xy_num_3D, z_min_3D, z_max_3D, z_num_3D, xy_max_2D, xy_num_2D, phi_1D, theta_1D]
 psi4_params = [psi4_dir, psi4_num, psi4_f, psi4_f_sorted]
-simulation_params = [M_ADM, cutoff_w, r_areal, gw_dt, num_modes, num_times, plot_all_modes, mode_to_plot]
+simulation_params = [M_ADM, cutoff_w, r_areal, gw_dt, num_modes, num_times, plot_all_modes, modes_to_plot]
 test_gw_params = [test_num_times, test_dt, test_kind, test_R, test_M, test_Om]
 
 gw_params = [root, test_flag, update_lookup, files_per_folder, psi4_params, grid_params, simulation_params, all_times, start_time, end_time, bin_dir, test_gw_params, threeD_flag]
