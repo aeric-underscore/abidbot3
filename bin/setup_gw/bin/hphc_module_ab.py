@@ -140,7 +140,7 @@ def write_vtk_2D(ylm, r, t, dt, clm, xs, ys, sx, sy, fol, all_modes, mode):
     if all_modes == True:
         hphc = np.einsum('ijm->ji', ylm*clm_ij)/r_ji
     else:  #plot chosen mode
-        hphc = np.einsum('ij->ji', ylm[...,mode]*clm_ij)/r_ji
+        hphc = np.einsum('ij->ji', (ylm*clm_ij)[...,mode])/r_ji
 
     scale_factor = 2000  #to scale the plane so it doesn't look flat
     hp = scale_factor * 2*np.real(hphc).flatten()
@@ -161,7 +161,7 @@ def write_vtk_3D(ylm, r, t, dt, clm, xs, ys, zs, sx, sy, sz, fol, all_modes, mod
     if all_modes == True:
         hphc = np.einsum('ijkm->kji',ylm*clm_ijk)/r_kji
     else:  #plot chosen mode
-        hphc = np.einsum('ijk->kji',ylm[...,mode]*clm_ijk)/r_kji
+        hphc = np.einsum('ijk->kji',(ylm*clm_ijk)[...,mode])/r_kji
 
     hp = 2*np.real(hphc).flatten()
     hc = -2*np.imag(hphc).flatten()
