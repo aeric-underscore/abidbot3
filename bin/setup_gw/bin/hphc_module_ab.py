@@ -27,8 +27,10 @@ def get_lookup_3D(a):
     print("creating 3D lookups, total x vals: " + str(len(a.gw.xs_3D)))
     ylm = np.zeros((len(a.gw.xs_3D), len(a.gw.ys_3D), len(a.gw.zs_3D), a.gw.num_modes), dtype=complex)
     r = np.zeros((len(a.gw.xs_3D), len(a.gw.ys_3D), len(a.gw.zs_3D)), dtype=float)
+    l = len(a.gw.xs_3D)
+    printProgressBar(0, l, prefix = 'Generating 3D Lookup Table:', suffix = '', length = 50)
     for i, x in enumerate(a.gw.xs_3D):
-        print("at x: " + str(i))
+        printProgressBar(i + 1, l, prefix = 'Generating 3D Lookup Table:', suffix = '', length = 50)
         for j, y in enumerate(a.gw.ys_3D):
             ph = np.arctan2(y,x)
             for k, z in enumerate(a.gw.zs_3D):
@@ -52,8 +54,10 @@ def get_lookup_2D(a):
     z = 0.0; th = np.arccos(0.0)
     ylm = np.zeros((len(a.gw.xs_2D), len(a.gw.ys_2D), a.gw.num_modes), dtype=complex)
     r = np.zeros((len(a.gw.xs_2D), len(a.gw.ys_2D)), dtype=float)
+    l = len(a.gw.xs_2D)
+    printProgressBar(0, l, prefix = 'Generating 2D Lookup Table:', suffix = '', length = 50)
     for i, x in enumerate(a.gw.xs_2D):
-        print("at x: " + str(i))
+        printProgressBar(i + 1, l, prefix = 'Generating 2D Lookup Table:', suffix = '', length = 50)
         for j, y in enumerate(a.gw.ys_2D):
             ph = np.arctan2(y,x)
             r[i,j] = np.sqrt(x**2+y**2+z**2)
@@ -185,9 +189,11 @@ def gen_data(a):
     else:
         times = range(a.gw.start_time, a.gw.end_time)
 
+    l = len(times)
+    printProgressBar(0, l, prefix = 'Generating GW VTK Data:', suffix = '', length = 50)
     for t in times:
+        printProgressBar(t + 1, l, prefix = 'Generating GW VTK Data', suffix = '', length = 50)
         time_f.write(str(t*a.gw.gw_dt))   #unretarded time
-        print("gen_data at time=" + str(t))
         if a.gw.threeD:
             h_max = write_vtk_3D(a.gw.ylm_3D, a.gw.r_3D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_3D, a.gw.ys_3D, a.gw.zs_3D, a.gw.sx_3D, a.gw.sy_3D, a.gw.sz_3D, a.gw.fol_name, a.gw.plot_all_modes, a.gw.modes_to_plot)
             max_strain = max(max_strain, h_max)
@@ -250,15 +256,12 @@ def write_vtk_test_2D(a):
         Ixx, Iyy, Ixy, Izz = get_I_pulsate(ts, a.gw.test_R, a.gw.test_M, a.gw.test_Om)
     elif a.gw.test_kind == 2: #ring_pulsate
         Ixx, Iyy, Ixy, Izz = get_I_ring_pulsate(ts, a.gw.test_R, a.gw.test_M, a.gw.test_Om)
-    print("Ixx shape = " + str(Ixx.shape))
-    print("Iyy shape = " + str(Iyy.shape))
-    print("Ixy shape = " + str(Ixy.shape))
-    print("Izz shape = " + str(Izz.shape))
-    print("r shape = " + str(a.gw.r_2D.shape))
     max_strain = 0.
     scale_factor = 10000    #to raise the plane so waves are more extreme
+    l = len(a.gw.test_num_times)
+    printProgressBar(0, l, prefix = 'Generating GW Test 2D Data:', suffix = '', length = 50)
     for t in range(a.gw.test_num_times):
-        print("write vtk test time = " + str(t))
+        printProgressBar(t + 1, l, prefix = 'Generating GW Test 2D Data:', suffix = '', length = 50)
         rt = ((t - (a.gw.r_2D/a.gw.test_dt)).astype(int)).clip(min=0)
         r_ji = np.einsum('ij->ji', a.gw.r_2D)
         Ixx_ij = Ixx[rt,]; Iyy_ij = Iyy[rt,]; Ixy_ij = Ixy[rt,]; Izz_ij = Izz[rt,]
@@ -282,8 +285,10 @@ def write_vtk_test_3D(a):
         Ixx, Iyy, Ixy, Izz = get_I_ring_pulsate(ts, a.gw.test_R, a.gw.test_M, a.gw.test_Om)
     # I[t], is like clm, reshape to I[rt[ijk]]
     max_strain = 0.
+    l = len(a.gw.test_num_times)
+    printProgressBar(0, l, prefix = 'Generating GW Test 3D Data:', suffix = '', length = 50)
     for t in range(a.gw.test_num_times):
-        print("write vtk test time = " + str(t))
+        printProgressBar(t + 1, l, prefix = 'Generating GW Test 3D Data:', suffix = '', length = 50)
         rt = ((t - (a.gw.r_3D/a.gw.test_dt)).astype(int)).clip(min=0)
         Ixx_ijk = Ixx[rt,]; Iyy_ijk = Iyy[rt,]; Ixy_ijk = Ixy[rt,]; Izz_ijk = Izz[rt,] #I_ijk[i,j,k]
         #t_ijk = np.full_like(r, t).astype(int)
@@ -298,3 +303,25 @@ def write_vtk_test_3D(a):
     max_strain_f = open(a.gw.fol_name + "/max_strain.txt", "w")
     max_strain_f.write(str(max_strain))
     max_strain_f.close()
+
+
+def printProgressBar(iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    # Print New Line on Complete
+    if iteration == total:
+        print()
