@@ -77,6 +77,7 @@ class AbidBot:
             sim_params = params_gw[6]
             self.M_ADM = float(sim_params[0]); self.cutoff_w = float(sim_params[1]); self.r_areal = float(sim_params[2]); self.gw_dt = float(sim_params[3])
             self.num_modes = int(sim_params[4]); self.num_times = int(sim_params[5])
+            self.plot_all_modes = bool(sim_params[6]); self.mode_to_plot = int(sim_params[7])
 
             
             self.all_times = bool(params_gw[7])

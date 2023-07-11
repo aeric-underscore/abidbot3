@@ -5,32 +5,66 @@ files_per_folder=$2
 root=$3
 
 cd $fol_name/2D
-numfiles=$(ls *hcross* | wc -l)
 folderidx=0
-echo "Moving 2D files into new folders"
-for i in `seq 0 $(($numfiles - 1))`; do
+file_count=0
+echo "Moving files into new folders"
+for f in hplus*; do
         curdir=VTK$(printf "%03d" $folderidx)
         if [ ! -d $curdir ]; then
                 mkdir $curdir
         fi
-        mv *_$(printf "%d" $i).vtk $curdir
-        if [ $(( ($i+1) % $files_per_folder)) == 0 -a $i != 0 ]; then
+        mv $f $curdir
+        if [ $files_per_folder == $file_count ]; then
                 folderidx=$((folderidx+1))
+                file_count=0
         fi
+        file_count=$((file_count+1))
 done
-cd $root
-cd $fol_name/3D
-numfiles=$(ls *hcross* | wc -l)
 folderidx=0
-echo "Moving 3D files into new folders"
-for i in `seq 0 $(($numfiles - 1))`; do
-       curdir=VTK$(printf "%03d" $folderidx)
-       if [ ! -d $curdir ]; then
-               mkdir $curdir
-       fi
-       mv *_$(printf "%d" $i).vtk $curdir
-       if [ $(( ($i+1) % $files_per_folder)) == 0 -a $i != 0 ]; then
-               folderidx=$((folderidx+1))
-       fi
+file_count=0
+for f in hcross*; do
+        curdir=VTK$(printf "%03d" $folderidx)
+        if [ ! -d $curdir ]; then
+                mkdir $curdir
+        fi
+        mv $f $curdir
+        if [ $files_per_folder == $file_count ]; then
+                folderidx=$((folderidx+1))
+                file_count=0
+        fi
+        file_count=$((file_count+1))
 done
+
+cd $fol_name/3D
+folderidx=0
+file_count=0
+echo "Moving files into new folders"
+for f in hplus*; do
+        curdir=VTK$(printf "%03d" $folderidx)
+        if [ ! -d $curdir ]; then
+                mkdir $curdir
+        fi
+        mv $f $curdir
+        if [ $files_per_folder == $file_count ]; then
+                folderidx=$((folderidx+1))
+                file_count=0
+        fi
+        file_count=$((file_count+1))
+done
+folderidx=0
+file_count=0
+for f in hcross*; do
+        curdir=VTK$(printf "%03d" $folderidx)
+        if [ ! -d $curdir ]; then
+                mkdir $curdir
+        fi
+        mv $f $curdir
+        if [ $files_per_folder == $file_count ]; then
+                folderidx=$((folderidx+1))
+                file_count=0
+        fi
+        file_count=$((file_count+1))
+done
+
+
 cd $root

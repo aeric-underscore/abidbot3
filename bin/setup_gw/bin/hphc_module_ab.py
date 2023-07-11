@@ -95,8 +95,8 @@ def hphc_to_vtk_2D(t, hp, hc, xs, ys, sx, sy, fol):
     #       "POINT_DATA " + str(len(xs)*len(ys)) + "\n"
     #       "SCALARS GW-FIELD float 1\nLOOKUP_TABLE GW-FIELD\n")
 
-    hp_f = open(fol + "/2D/hplus_" + str(t) + ".vtk", "w")
-    hc_f = open(fol + "/2D/hcross_" + str(t) + ".vtk", "w")
+    hp_f = open(fol + "/2D/hplus_" + str(t).zfill(6) + ".vtk", "w")
+    hc_f = open(fol + "/2D/hcross_" + str(t).zfill(6) + ".vtk", "w")
     hp_f.write(header); hc_f.write(header)
     hp_f.write(" ".join([str(i) for i in hp]))
     hc_f.write(" ".join([str(i) for i in hc]))
@@ -110,8 +110,8 @@ def hphc_to_vtk_3D(t, hp, hc, xs, ys, zs, sx, sy, sz, fol):
            "SPACING " + str(sx) + " " + str(sy) + " " + str(sz) + "\n"
            "POINT_DATA " + str(len(xs)*len(ys)*len(zs)) + "\n"
            "SCALARS GW-FIELD float 1\nLOOKUP_TABLE default\n")
-    hp_f = open(fol + "/3D/hplus_" + str(t) + ".vtk", "w")
-    hc_f = open(fol + "/3D/hcross_" + str(t) + ".vtk", "w")
+    hp_f = open(fol + "/3D/hplus_" + str(t).zfill(6) + ".vtk", "w")
+    hc_f = open(fol + "/3D/hcross_" + str(t).zfill(6) + ".vtk", "w")
     hp_f.write(header); hc_f.write(header)
     hp_f.write(" ".join([str(i) for i in hp]))
     hc_f.write(" ".join([str(i) for i in hc]))
@@ -133,18 +133,22 @@ def write_vtk_2D_grid(a):
     grid_f.write(" ".join([str(i) for i in np.zeros(new_num*new_num)]))
     grid_f.close()
 
-def write_vtk_2D(ylm, r, t, dt, clm, xs, ys, sx, sy, fol): 
+def write_vtk_2D(ylm, r, t, dt, clm, xs, ys, sx, sy, fol, all_modes, mode): 
     rt = ((t - (r/dt)).astype(int)).clip(min=0)  #see write_vtk_3D for details
     clm_ij = clm[rt,:]
     r_ji = np.einsum('ij->ji', r)
-    hphc = np.einsum('ijm->ji', ylm*clm_ij)/r_ji
+    if all_modes == True:
+        hphc = np.einsum('ijm->ji', ylm*clm_ij)/r_ji
+    else:  #plot chosen mode
+        hphc = np.einsum('ij->ji', ylm[...,mode]*clm_ij)/r_ji
+
     scale_factor = 2000  #to scale the plane so it doesn't look flat
     hp = scale_factor * 2*np.real(hphc).flatten()
     hc = scale_factor * -2*np.imag(hphc).flatten()
     hphc_to_vtk_2D(t, hp, hc, xs, ys, sx, sy, fol)
     return np.real(hphc[0,0])
 
-def write_vtk_3D(ylm, r, t, dt, clm, xs, ys, zs, sx, sy, sz, fol):
+def write_vtk_3D(ylm, r, t, dt, clm, xs, ys, zs, sx, sy, sz, fol, all_modes, mode):
     # gives a 'retarded time index' for the clm array
     #     needs to be int to reindex clm[t,mode] -> clm[rt[i,j,k], mode]
     #     clip sets all negative values to 0 so doesn't go out of index
@@ -154,7 +158,11 @@ def write_vtk_3D(ylm, r, t, dt, clm, xs, ys, zs, sx, sy, sz, fol):
     # sum over modes column (u should learn einsum if u haven't already)
     #      order is reversed b/c vtk requires the flattened array to be indexed like
     #      kji = (k*num_y+j)*num_y+i; a[kji]
-    hphc = np.einsum('ijkm->kji',ylm*clm_ijk)/r_kji
+    if all_modes == True:
+        hphc = np.einsum('ijkm->kji',ylm*clm_ijk)/r_kji
+    else:  #plot chosen mode
+        hphc = np.einsum('ijk->kji',ylm[...,mode]*clm_ijk)/r_kji
+
     hp = 2*np.real(hphc).flatten()
     hc = -2*np.imag(hphc).flatten()
     hphc_to_vtk_3D(t, hp, hc, xs, ys, zs, sx, sy, sz, fol)
@@ -175,10 +183,10 @@ def gen_data(a):
         time_f.write(str(t*a.gw.gw_dt))   #unretarded time
         print("gen_data at time=" + str(t))
         if a.gw.threeD:
-            h_max = write_vtk_3D(a.gw.ylm_3D, a.gw.r_3D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_3D, a.gw.ys_3D, a.gw.zs_3D, a.gw.sx_3D, a.gw.sy_3D, a.gw.sz_3D, a.gw.fol_name)
+            h_max = write_vtk_3D(a.gw.ylm_3D, a.gw.r_3D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_3D, a.gw.ys_3D, a.gw.zs_3D, a.gw.sx_3D, a.gw.sy_3D, a.gw.sz_3D, a.gw.fol_name, a.gw.plot_all_modes, a.gw.mode_to_plot)
             max_strain = max(max_strain, h_max)
         if a.gw.twoD:
-            hp = write_vtk_2D(a.gw.ylm_2D, a.gw.r_2D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_2D, a.gw.ys_2D, a.gw.sx_2D, a.gw.sy_2D, a.gw.fol_name)
+            hp = write_vtk_2D(a.gw.ylm_2D, a.gw.r_2D, t, a.gw.gw_dt, a.gw.clm, a.gw.xs_2D, a.gw.ys_2D, a.gw.sx_2D, a.gw.sy_2D, a.gw.fol_name, a.gw.plot_all_modes, a.gw.mode_to_plot)
             hp_f.write(str(hp) + '\n')
 
     hp_f.close()
