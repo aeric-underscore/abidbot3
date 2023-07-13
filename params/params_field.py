@@ -7,6 +7,10 @@ import os
 #   | magnetic field lines follow the flow of matter, so for particle fields
 #   | the seed points are particles of matter
 # 
+#
+# IMPORTANT: all settings related to integration settings (e.g. streamXML stuff)
+#            are found in params_run.py
+
 
 # useParticleTracer:    [bool]  (usually is false, particleTracer is not supported yet)
 #                       If false: particlePicker is used to get seed points
@@ -46,7 +50,7 @@ useCustomParticleSeeds = False
 #                   create these by what every means you would like
 customSeedTXTs = ["seeds_0.txt", "seeds_1.txt", "seeds_2.txt"]
 
-###### Built in seed maker ######
+################ Built in seed maker ################
 #               | the built in seed maker creates seeds in rings 
 #
 # particleCenters:          [float-tuple list] centers of the rings 
@@ -71,22 +75,6 @@ particleNumSeeds = [8, 8, 8]
 from math import pi
 particleOffsets = [0., 0., 0.]
 
-
-
-###### Paritcle Integration Settings ######
-#               | list of XML files for integral curve attributes corresponding to the particle field plots
-#               | maxStepLenghts and maxSteps (most commonly tinkered with) will override the values in the XML file
-#               | | https://visit-sphinx-github-user-manual.readthedocs.io/en/stable/python_scripting/attributes.html#integralcurve-integralcurveattributes
-# particleIntegrationXMLs:  [str list] file names in "bin/visit_atts/bfield_atts/"
-# particleMaxStepLengths:   [float list] decreasing will make your field lines smoother (but shorter)
-# particleMaxSteps:         [int list] increasing will make your field lines longer
-particleIntegrationXMLs = ["stream_particle_0.xml", "stream_particle_1.xml", "stream_particle_2.xml"]
-particleMaxStepLengths = [10., 10., 10.]
-particleMaxSteps = [2000, 2000, 2000]
-
-# particleColors:   [int-tuples list]
-#                   list of colors corresponding to the particle field plots; sets the color of the field line
-particleColors = [(0, 255, 0), (0, 255, 0), (0, 255, 0)]
 
 ########################################################################
 
@@ -117,39 +105,13 @@ gridOffsets = [0., 0., 0.]
 
 
 
-###### Grid Point Integration Settings ######
-#               | list of XML files for integral curve attributes corresponding to the grid point field plots
-#               | each index corresponds to a black hole (supports up to three black holes)
-#               | maxStepLenghts, maxSteps,  (most commonly tinkered with) and directions will override the values in the XML file
-#               | https://visit-sphinx-github-user-manual.readthedocs.io/en/stable/python_scripting/attributes.html#integralcurve-integralcurveattributes
-# gridIntegrationXMLs:  [str list] file names in "bin/visit_atts/bfield_atts/"
-# gridMaxStepLengths:   [float list]  decreasing will make your field lines smoother (but shorter)
-# gridMaxSteps:         [int list] increasing will make your field lines longer
-# gridDirections:       [str-tuple list] specifies integration direction of the ring of points above and below the black hole (wrt its spin)
-#                                    like ("above_direction", "below_direction")
-#                                    try the different combinations of "Foward" and "Backward" until it looks good
-gridIntegrationXMLs = ["stream_grid_0.xml", "stream_grid_1.xml", "stream_grid_2.xml"]
-gridMaxStepLengths = [10., 10., 10.]
-gridMaxSteps = [2000, 2000, 2000]
-gridDirections = [("Forward", "Backward"), ("Forward", "Backward"), ("Forward", "Backward")]
-
-# gridColors:   [int-tuples list]
-#                   list of colors corresponding to the grid point field plots; sets the color of the field line
-gridColors = [(255, 255, 255), (255, 255, 255), (255, 255, 255)]
-
-
 ########################################################################
-
+generalParticleSettings = [useParticleTracer, firstTime, particleFlags, useCustomParticleSeeds, customSeedTXTs]
 particleMakerSettings = [particleCenters, particleNormVecs, particlePairs, particleNumSeeds, particleOffsets]
-particleIntegrationSettings = [particleIntegrationXMLs, particleMaxStepLengths, particleMaxSteps]
-
 gridMakerSettings = [bh_rs, gridPairs, gridNumSteps, gridOffsets]
-gridIntegrationSettings = [gridIntegrationXMLs, gridMaxStepLengths, gridMaxSteps, gridDirections]
+
+params_field = [generalParticleSettings, particleMakerSettings, gridMakerSettings]
 
 
 
-########################################################################
 
-params_field = [useParticleTracer, firstTime, particleFlags, useCustomParticleSeeds, customSeedTXTs, 
-    particleMakerSettings, particleIntegrationSettings, particleColors,
-    gridMakerSettings, gridIntegrationSettings, gridColors]

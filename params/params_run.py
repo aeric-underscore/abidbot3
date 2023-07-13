@@ -17,6 +17,7 @@ viewXML = atts + "/view.xml"
 # zoom                  |   viewNormal is the vector that points from toward the camera from the focus
 #                       |       e.g. (0,1,0) = camera on +y axis, (0,0.5,0.5) = camera on line y=z 
 #                       |   and viewUp is what is at the top of the image (usually leave as 0,0,1)
+override_view_flag = False
 viewNormal = (0., 0.5, 0.5)
 viewUp = (0., 0., 1.)
 zoom = 500
@@ -152,7 +153,7 @@ volIsoSettings = [rho_volXML, rho_pseudoXML, rho_isoXML, bsqXML, bsq_pseudoXML, 
 particleLineSettings = [particleIntegrationXMLs, particleMaxStepLengths, particleMaxSteps, particleColors]
 gridLineSettings = [gridIntegrationXMLs, gridMaxStepLengths, gridMaxSteps, gridDirections, gridColors]
 velocitySettings = [vec1XML, vec2XML, nVectors1, nVectors2, follow_bsq2r_flag, min_bsq2r_val, min_vel_magnitude, 
-                    vec1_cylinder_flag, vec1_cylidner_r, vec2_flag, vec1_sphere_r, vec2_sphere_r]
+                    vec1_cylinder_flag, vec1_cylinder_r, vec2_flag, vec1_sphere_r, vec2_sphere_r]
 spinvecSettings = [spinvecXML, spinvec_color, spinvec_scale1, spinvec_scale2, spinvec_scale3]
 
 params_run = [viewSettings, volIsoSettings, particleLineSettings, gridLineSettings, velocitySettings, spinvecSettings]

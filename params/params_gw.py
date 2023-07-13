@@ -1,12 +1,13 @@
 import os
 import subprocess
 from math import pi
+from params import root, M
 # written by eric may '23
 
 
 # # # for python part
 # # # don't end with slash (though i don't think it matters)
-root = "/anvil/scratch/x-ericyu3/gw_plane_development/gw_py_code"
+gw_dir = root + "/bin/setup_gw"
 test_flag = False     #boolean 0 (false) or 1 (true) (regular run or test source run)
 update_lookup = True   #boolean 0 or 1   only need to update if you change resolution or num modes
 
@@ -18,7 +19,7 @@ modes_to_plot = [0,4]   #if above is false, then plots only this mode; must be a
                        # mode 0 is (2,2), 1 is (2,1), 2 is (2,0), 3 is (2,-1), 4 is (2,-2), 5 is (3,3), etc..
 
 
-M_ADM = 1.0
+M_ADM = M
 cutoff_w = 0.27        # has to be lower than the fundamental freq of gw radiation, ask someone else for this
 files_per_folder = 25  #files per vtk folder
 
@@ -75,11 +76,12 @@ test_R = 0.1
 test_M = 1.0
 test_Om = 0.3
 
+###################################################################################################
 
 # # # # AUTOMATICALLY SET VARIABLES FROM ABOVE # # #
 # # # # shouoldn't need to touch regularly
 psi4_f = psi4_dir + "/Psi4_rad.mon." + str(psi4_num) # # # psi4 file
-bin_dir = root + "/bin"    # where main scripts are to avoid declutter
+bin_dir = gw_dir + "/bin"    # where main scripts are to avoid declutter
 
 
 # # # # fetching some of the psi4 specific parameters
@@ -95,18 +97,14 @@ num_modes = int(out_arr[1])
 r_areal = float(out_arr[2])
 gw_dt = float(out_arr[3])
 
+###################################################################################################
 
-grid_params = [xy_max_3D, xy_num_3D, z_min_3D, z_max_3D, z_num_3D, xy_max_2D, xy_num_2D, phi_1D, theta_1D]
-psi4_params = [psi4_dir, psi4_num, psi4_f, psi4_f_sorted]
-simulation_params = [M_ADM, cutoff_w, r_areal, gw_dt, num_modes, num_times, plot_all_modes, modes_to_plot]
-test_gw_params = [test_num_times, test_dt, test_kind, test_R, test_M, test_Om]
+generalGWSettings = [gw_dir, test_flag, update_lookup, files_per_folder, threeD_flag, all_times, start_time, end_time]
+psi4Settings = [psi4_dir, psi4_num, psi4_f, psi4_f_sorted, bin_dir]
+gridSettings = [xy_max_3D, xy_num_3D, z_min_3D, z_max_3D, z_num_3D, xy_max_2D, xy_num_2D, phi_1D, theta_1D]
+simulationSettings = [M_ADM, cutoff_w, r_areal, gw_dt, num_modes, num_times, plot_all_modes, modes_to_plot]
+testGWSettings = [test_num_times, test_dt, test_kind, test_R, test_M, test_Om]
 
-gw_params = [root, test_flag, update_lookup, files_per_folder, psi4_params, grid_params, simulation_params, all_times, start_time, end_time, bin_dir, test_gw_params, threeD_flag]
-
-
-
-
-
-
+params_gw = [generalGWSettings, psi4Settings, gridSettings, simulationSettings, testGWSettings]
 
 

@@ -4,7 +4,7 @@ import os
 # root:		    [str] 
 #               The full path to abidbot (e.g. where bin/, setup.sh, data_raw/ live)
 #				| use the command "pwd" (print working directory)
-root = ""
+root = "/Users/ericyu3/UIUC/stu/2023_abidbot_3/abidbot3"
 
 # visit_path:   [str]
 #               Full path to the ~/.visit/ folder in your home directory
@@ -16,7 +16,7 @@ visit_path = "~/.visit/"
 #				| to check, do "module load hdf5" and go to one of the 3d_data folders
 #				| and do "h5ls" on one of the .h5 files and check the step between
 #				| subsequent values in the 'it' column
-it = 
+it = 1
 
 # dt:           [float] in (0, inf)
 #               How much time in code units pass between each frame (each 'it' number in h5data is a frame)
@@ -24,19 +24,19 @@ it =
 #				| no sure fire way to get this since the way diagnostic files are output may change in the future
 #				| at the moment i am writing this, the file bhns.mon is output at twice the frequency of h5data, so
 #				| the difference between every other row in the time column is dt
-dt = 
+dt = 1.0
 
 # M: 		    [float] in (0, inf)
 #               The ADM mass at initial time(this is used to normalize time/length labels)
 #				| found in the file "bhns.mon", there are one or multple columns (black holes and volume are separate)
 #				| starting with M_ADM; the set M equal to the sum of these (just take the value of the first time)
-M = 
+M = 1.0
 
 # maxdensity:	[float] in (0, inf)
 #               The maximum density at initial time (used to normalize density colorbar)
 #               | found in the file "bhns.mon" in the 9th columm labeled "rho_b_max"
 #               note: sometimes, the initial time isn't enough, so you may need to use the maximum value int he 9th column
-maxdensity = 
+maxdensity = 1.0 
 
 # offset:		[int] in [0, inf)
 #               Is 0 if you start from the 3d_data folder that has it=0
@@ -74,10 +74,10 @@ bhForms = True if os.path.exists(root + "/data_raw/Horizon/") else False
 bh1 = False if len([f for f in os.listdir(root + "/data_raw/Horizon") if f.endswith(".ah1.gp")]) == 0 else True
 bh2 = False if len([f for f in os.listdir(root + "/data_raw/Horizon") if f.endswith(".ah2.gp")]) == 0 else True
 bh3 = False if len([f for f in os.listdir(root + "/data_raw/Horizon") if f.endswith(".ah3.gp")]) == 0 else True
-bh_flags = [bh1, bh2, bh3]
+
+generalSettings = [root, visit_path, it, dt, M, maxdensity, offset, time_offset, numStars]
+bhSettings = [bhForms, bh1, bh2, bh3]
 
 
-
-
-params = [root, it, dt, M, maxdensity, offset, time_offset, numStars, bhForms, bh_flags]
+params = [generalSettings, bhSettings]
 
